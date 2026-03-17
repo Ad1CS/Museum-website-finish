@@ -106,7 +106,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # CompressedStaticFilesStorage: serves gzip in prod without needing a manifest file.
 # Use CompressedManifestStaticFilesStorage only if collectstatic is always run before start.
 STATICFILES_STORAGE = (
-    'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    'whitenoise.storage.CompressedStaticFilesStorage'
     if not DEBUG
     else 'django.contrib.staticfiles.storage.StaticFilesStorage'
 )
