@@ -1,8 +1,9 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import render
+from django.views.static import serve
 from . import views
 
 admin.site.site_header = 'Музей трудовой и воинской славы'
@@ -21,10 +22,9 @@ urlpatterns = [
     path('news/', include('apps.news.urls', namespace='news')),
     path('admin/', admin.site.urls),
     path('404-preview/', preview_404),
+    # Explicitly serve media files in production
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
-
-# Always serve media files so they work on Render with a Persistent Disk
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
