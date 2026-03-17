@@ -37,6 +37,7 @@ class MapSettings(models.Model):
 class Building(models.Model):
     slug = models.SlugField('Slug', unique=True)
     name = models.CharField('Название', max_length=300)
+    main_image = models.ImageField('Главное фото', upload_to='map/buildings/', blank=True, null=True)
     built_years = models.CharField('Год постройки', max_length=100, blank=True)
     description = models.TextField('Описание')
     # Map position (percentage from top-left of the map image)

@@ -17,7 +17,11 @@ class BuildingAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Основное', {
-            'fields': ('name', 'slug', 'built_years', 'description', 'published'),
+            'fields': ('name', 'slug', 'main_image', 'built_years', 'description', 'published'),
+        }),
+        ('📸 Галерея (Дополнительные фото)', {
+            'fields': ('photos',),
+            'description': 'Здесь можно выбрать дополнительные фотографии, которые появятся внизу страницы здания.',
         }),
         ('📐 Позиция и форма на карте', {
             'fields': (
@@ -28,15 +32,6 @@ class BuildingAdmin(admin.ModelAdmin):
                 'order',
                 'map_shape_editor',
             ),
-            'description': (
-                'Позиция и размер — в процентах (0–100). '
-                '<b>Угол поворота</b> вращает прямоугольник. '
-                '<b>Форма</b> — опциональный polygon clip-path. '
-                'Используйте редактор ниже для визуальной настройки формы.'
-            ),
-        }),
-        ('Фотографии', {
-            'fields': ('photos',),
         }),
     )
 

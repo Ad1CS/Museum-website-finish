@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load static %}
 {% block title %}{{ building.name }}{% endblock %}
 
 {% block breadcrumbs %}
@@ -13,13 +14,17 @@
 <div class="page-container">
   <div class="item-detail-layout">
     <div class="item-detail-image-col">
-      {% with first_photo=building.photos.first %}
-        {% if first_photo and first_photo.image %}
-          <img src="{{ first_photo.image.url }}" alt="{{ building.name }}" class="item-detail-photo">
-        {% else %}
-          <div class="item-detail-photo-placeholder">Нет фото</div>
-        {% endif %}
-      {% endwith %}
+      {% if building.main_image %}
+        <img src="{{ building.main_image.url }}" alt="{{ building.name }}" class="item-detail-photo">
+      {% else %}
+        {% with first_photo=building.photos.first %}
+          {% if first_photo and first_photo.image %}
+            <img src="{{ first_photo.image.url }}" alt="{{ building.name }}" class="item-detail-photo">
+          {% else %}
+            <div class="item-detail-photo-placeholder">Нет фото</div>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
     </div>
     <div class="item-detail-info-col">
       <span class="tag">Здание</span>
