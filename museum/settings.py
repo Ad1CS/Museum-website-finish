@@ -112,8 +112,13 @@ STATICFILES_STORAGE = (
 )
 
 # Media files
+if not DEBUG:
+    # Render persistent disk absolute path
+    MEDIA_ROOT = '/opt/render/project/src/media'
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
