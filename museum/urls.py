@@ -23,6 +23,8 @@ urlpatterns = [
     path('404-preview/', preview_404),
 ]
 
+# Always serve media files so they work on Render with a Persistent Disk
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
