@@ -57,7 +57,7 @@ class ArchiveCaseAdmin(admin.ModelAdmin):
 @admin.register(FondItem)
 class FondItemAdmin(admin.ModelAdmin):
     list_display  = ['thumbnail', 'title', 'item_type', 'period', 'kp_number',
-                     'fund', 'gallery_photos_count', 'staff_count', 'published']
+                     'fund', 'gallery_photos_count', 'bulk_upload_link', 'staff_count', 'published']
     list_display_links = ['thumbnail', 'title']
     list_filter   = ['item_type', 'period', 'published', 'fund']
     list_editable = ['published']
@@ -66,6 +66,32 @@ class FondItemAdmin(admin.ModelAdmin):
     readonly_fields   = ['created_at', 'updated_at', 'image_preview', 'video_preview',
                          'gallery_photos_links', 'staff_links_display']
     save_on_top = True
+
+    def get_urls(self):
+        urls = super().get_urls()
+        from .views import bulk_upload_do
+        from django.urls import path
+        from django.shortcuts import render, get_object_or_404
+        
+        def bulk_upload_view(request, item_id):
+            item = get_object_or_404(FondItem, pk=item_id)
+            return render(request, 'admin/fond/bulk_upload.html', {'item': item})
+
+        my_urls = [
+            path('<int:item_id>/bulk-upload/', self.admin_site.admin_view(bulk_upload_view), name='fond_item_bulk_upload'),
+            path('<int:item_id>/bulk-upload/do/', self.admin_site.admin_view(bulk_upload_do), name='fond_item_bulk_upload_do'),
+        ]
+        return my_urls + urls
+
+    def bulk_upload_link(self, obj):
+        if not obj.pk: return '—'
+        from django.urls import reverse
+        url = reverse('admin:fond_item_bulk_upload', args=[obj.pk])
+        return format_html(
+            '<a href="{}" style="background:#417690;color:white;padding:4px 10px;'
+            'border-radius:3px;font-size:12px;text-decoration:none;white-space:nowrap;">'
+            '📷 Загрузить фото</a>', url)
+    bulk_upload_link.short_description = 'Массовая загрузка'
 
     fieldsets = (
         ('Основное', {
