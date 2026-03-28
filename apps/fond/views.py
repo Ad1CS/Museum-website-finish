@@ -74,3 +74,35 @@ class CaseDetailView(DetailView):
     template_name = 'fond/case_detail.html'
     model = ArchiveCase
     context_object_name = 'case'
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
+@staff_member_required
+def bulk_upload_do(request, item_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    from apps.gallery.models import Album, Media as GalleryMedia
+    from .models import FondItem
+    item = get_object_or_404(FondItem, pk=item_id)
+    images = request.FILES.getlist('images')
+    album_title = f'Фонд: {item.title[:100]}'
+    album, _ = Album.objects.get_or_create(
+        title=album_title,
+        defaults={'period': item.period or 'modern', 'published': True,
+                  'description': f'Фотографии предмета фонда: {item.title}'},
+    )
+    max_order = GalleryMedia.objects.filter(album=album).order_by('-order').values_list('order', flat=True).first() or 0
+    created = []
+    for i, img in enumerate(images):
+        media = GalleryMedia.objects.create(
+            album=album, media_type='photo', image=img,
+            fond_item=item, caption='', order=max_order + i + 1, published=True,
+        )
+        created.append(media.pk)
+        if i == 0 and not item.image:
+            item.image = img
+            item.save(update_fields=['image'])
+    return JsonResponse({'created': len(created), 'ids': created})
